@@ -15,29 +15,28 @@ class AIConfig:
     A class object that contains the configuration information for the AI
 
     Attributes:
-        ai_name (str): The name of the AI.
-        ai_role (str): The description of the AI's role.
-        ai_goals (list): The list of objectives the AI is supposed to complete.
+            purpose (str): The name of the AI.
+            desired_outcomes (str): 
+            suggested_procedure (list): The list of user suggested objectives the AI is supposed to complete.
     """
 
-    def __init__(
-        self, ai_name: str = "", ai_role: str = "", ai_goals: list | None = None
-    ) -> None:
+    def __init__(self, ai_name: str="", purpose: str="", desired_outcomes: list=[], suggested_procedure: list=[]) -> None:
         """
         Initialize a class instance
 
         Parameters:
-            ai_name (str): The name of the AI.
-            ai_role (str): The description of the AI's role.
-            ai_goals (list): The list of objectives the AI is supposed to complete.
+            purpose (str): The name of the AI.
+            desired_outcomes (str): 
+            suggested_procedure (list): The list of user suggested objectives the AI is supposed to complete.
         Returns:
             None
         """
-        if ai_goals is None:
-            ai_goals = []
+        if desired_outcomes is None:
+            desired_outcomes = []
         self.ai_name = ai_name
-        self.ai_role = ai_role
-        self.ai_goals = ai_goals
+        self.purpose = purpose
+        self.desired_outcomes = desired_outcomes
+        self.suggested_procedure = suggested_procedure
 
     # Soon this will go in a folder where it remembers more stuff about the run(s)
     SAVE_FILE = os.path.join(os.path.dirname(__file__), "..", "ai_settings.yaml")
@@ -64,12 +63,13 @@ class AIConfig:
             config_params = {}
 
         ai_name = config_params.get("ai_name", "")
-        ai_role = config_params.get("ai_role", "")
-        ai_goals = config_params.get("ai_goals", [])
+        purpose = config_params.get("purpose", "")
+        desired_outcomes = config_params.get("desired_outcomes", [])
+        suggested_procedure = config_params.get("suggested_procedure", [])
         # type: Type[AIConfig]
-        return AIConfig(ai_name, ai_role, ai_goals)
+        return AIConfig(ai_name, purpose, desired_outcomes, suggested_procedure)
 
-    def save(self, config_file: str = SAVE_FILE) -> None:
+    def save(self, config_file: str=SAVE_FILE) -> None:
         """
         Saves the class parameters to the specified file yaml file path as a yaml file.
 
@@ -81,13 +81,9 @@ class AIConfig:
             None
         """
 
-        config = {
-            "ai_name": self.ai_name,
-            "ai_role": self.ai_role,
-            "ai_goals": self.ai_goals,
-        }
+        config = {"ai_name": self.ai_name, "purpose": self.purpose, "desired_outcomes": self.desired_outcomes, "suggested_procedure": self.suggested_procedure}
         with open(config_file, "w", encoding="utf-8") as file:
-            yaml.dump(config, file, allow_unicode=True)
+            yaml.dump(config, file,allow_unicode=True)
 
     def construct_full_prompt(self) -> str:
         """
@@ -101,21 +97,15 @@ class AIConfig:
               including the ai_name, ai_role and ai_goals.
         """
 
-        prompt_start = (
-            "Your decisions must always be made independently without"
-            " seeking user assistance. Play to your strengths as an LLM and pursue"
-            " simple strategies with no legal complications."
-            ""
-        )
-
+        prompt_start = """Play to your strengths as an LLM and pursue simple strategies with no legal complications."""
         from autogpt.prompt import get_prompt
-
         # Construct full prompt
-        full_prompt = (
-            f"You are {self.ai_name}, {self.ai_role}\n{prompt_start}\n\nGOALS:\n\n"
-        )
-        for i, goal in enumerate(self.ai_goals):
-            full_prompt += f"{i+1}. {goal}\n"
-
+        full_prompt = f"PURPOSE:\n\n{self.purpose}\n\nDESIRED OUTCOMES:\n\n"
+        for i, outcome in enumerate(self.desired_outcomes):
+            full_prompt += f"{i+1}. {outcome}\n"
+        full_prompt += f"\n\nSUGGESTED PROCEDURE:"
+        for i, step in enumerate(self.suggested_procedure):
+            full_prompt += f"{i+1}. {step}\n"
+        full_prompt += f"\n\n{prompt_start}"
         full_prompt += f"\n\n{get_prompt()}"
         return full_prompt
