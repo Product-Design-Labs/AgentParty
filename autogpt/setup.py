@@ -13,9 +13,10 @@ def prompt_user() -> AIConfig:
         AIConfig: The AIConfig object containing the user's input
     """
     ai_name = ""
+    purpose = ""
     # Construct the prompt
     logger.typewriter_log(
-        "Welcome to Auto-GPT! ",
+        "Welcome to AgentParty! ",
         Fore.GREEN,
         "run with '--help' for more information.",
         speak_text=True,
@@ -24,54 +25,67 @@ def prompt_user() -> AIConfig:
     logger.typewriter_log(
         "Create an AI-Assistant:",
         Fore.GREEN,
-        "Enter the name of your AI and its role below. Entering nothing will load"
-        " defaults.",
+        "Enter the Purpose, Desired Outcomes, and Suggested Procedure for"
+        " Agent A. Entering nothing will load defaults.",
         speak_text=True,
     )
 
     # Get AI Name from User
     logger.typewriter_log(
-        "Name your AI: ", Fore.GREEN, "For example, 'Entrepreneur-GPT'"
-    )
+        "Name your AI: ",
+        Fore.GREEN,
+        "For example, 'Agent-A'")
     ai_name = utils.clean_input("AI Name: ")
     if ai_name == "":
-        ai_name = "Entrepreneur-GPT"
+        ai_name = "Agent_A"
 
     logger.typewriter_log(
         f"{ai_name} here!", Fore.LIGHTBLUE_EX, "I am at your service.", speak_text=True
     )
 
-    # Get AI Role from User
+    # Get Purpose from User
     logger.typewriter_log(
-        "Describe your AI's role: ",
-        Fore.GREEN,
-        "For example, 'an AI designed to autonomously develop and run businesses with"
-        " the sole goal of increasing your net worth.'",
-    )
-    ai_role = utils.clean_input(f"{ai_name} is: ")
-    if ai_role == "":
-        ai_role = "an AI designed to autonomously develop and run businesses with the"
+        "Enter the Purpose of Agent A: "
+        "For example, 'an AI designed to autonomously develop and run businesses",
+        Fore.GREEN)
+    purpose = utils.clean_input(f"{ai_name} is: ")
+    if purpose == "":
+        purpose = "an AI designed to autonomously develop and run businesses with the"
         " sole goal of increasing your net worth."
 
-    # Enter up to 5 goals for the AI
+    # Get Desired Outcomes from User
     logger.typewriter_log(
-        "Enter up to 5 goals for your AI: ",
-        Fore.GREEN,
-        "For example: \nIncrease net worth, Grow Twitter Account, Develop and manage"
-        " multiple businesses autonomously'",
-    )
-    print("Enter nothing to load defaults, enter nothing when finished.", flush=True)
-    ai_goals = []
-    for i in range(5):
-        ai_goal = utils.clean_input(f"{Fore.LIGHTBLUE_EX}Goal{Style.RESET_ALL} {i+1}: ")
-        if ai_goal == "":
+        "Enter Desired Outcomes for Agent A (type 'done' when finished):",
+        Fore.GREEN)
+    desired_outcomes = []
+    while True:
+        outcome = utils.clean_input("Outcome: ")
+        if outcome.lower() == 'done':
             break
-        ai_goals.append(ai_goal)
-    if not ai_goals:
-        ai_goals = [
+        desired_outcomes.append(outcome)
+    if not desired_outcomes:
+        desired_outcomes = [
             "Increase net worth",
             "Grow Twitter Account",
             "Develop and manage multiple businesses autonomously",
         ]
+    
+    # Get Suggested Procedure from User
+    logger.typewriter_log(
+        "Enter Suggested next steps for Agent A (type 'done' when finished):",
+        Fore.GREEN)
+    suggested_procedure = []
+    while True:
+        outcome = utils.clean_input("Step: ")
+        if outcome.lower() == 'done':
+            break
+        suggested_procedure.append(outcome)
+    if not suggested_procedure:
+        suggested_procedure = [
+            "Read the files inside the working directory",
+            "Ask the user for input",
+            "Generate a plan based on the user's input",
+        ]
+    
 
-    return AIConfig(ai_name, ai_role, ai_goals)
+    return AIConfig(ai_name, purpose, desired_outcomes, suggested_procedure)

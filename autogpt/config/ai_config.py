@@ -20,8 +20,7 @@ class AIConfig:
             suggested_procedure (list): The list of user suggested objectives the AI is supposed to complete.
     """
 
-    def __init__(self, ai_name: str="", purpose: str="", desired_outcomes: list=[], suggested_procedure: list=[] | None = None
-    ) -> None:
+    def __init__(self, ai_name: str="", purpose: str="", desired_outcomes: list=[], suggested_procedure: list=[]) -> None:
         """
         Initialize a class instance
 
